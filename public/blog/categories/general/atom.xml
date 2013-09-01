@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: general | Read My Things]]></title>
+  <link href="http://www.readmythings.com/blog/categories/general/atom.xml" rel="self"/>
+  <link href="http://www.readmythings.com/"/>
+  <updated>2013-08-31T23:48:26-06:00</updated>
+  <id>http://www.readmythings.com/</id>
+  <author>
+    <name><![CDATA[Jeremy Cerise]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Moving away from Wordpress]]></title>
+    <link href="http://www.readmythings.com/blog/2012/09/17/moving-away-from-wordpress/"/>
+    <updated>2012-09-17T16:05:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/09/17/moving-away-from-wordpress</id>
+    <content type="html"><![CDATA[<p>Recently, my old hosting contract ran out. This did two things:</p>
+
+<ol>
+  <li>Lock down all my old blog content so I couldn't access it unless I
+renewed
+  <li>Make me re-asses my hosting plan, domain name, and general blog
+philosophies
+</ol>
+
+
+<p>The former bummed me out quite a bit, as I had some decent (and decently
+well travelled) blog posts about various aspects of Android development.
+It kind of stings to lose those, but, oh well. This led me to the
+latter: it was  probably time to move on anyways. My old blog at
+advancingbackwards (which now redirects here) was being neglected, and
+it wasn't much fun to write on it anymore. Why was that?</p>
+
+<!--more-->
+
+
+<p>The main reason was that I really am not overly fond of Wordpress. It
+makes creating a blog really simple: install, add theme, create content.
+Great, if thats all you want to do. But, I have always been a bit of a
+hacker when it comes to these things. I like having control over the
+systems I'm using, and concurrently, I also like to have a strong
+working knowledge of whats making things happen as I use them. With
+Wordpress, I was never really motivated to learn what was making it
+tick. I just never really cared. And that, largely, is the reason I
+stopped using it.</p>
+
+<p>I had decided a while back that I was going to ditch my Wordpress site
+at some point, I just kept putting it off due to other obligations. My
+hosting expiring was just the kick in the pants I needed. Originally,
+after the incident, I had planned on launching (prematurely, it turned
+out) a piece of software I had been hacking on for a while that is based
+on a neat little forum project I stumbled across a while back. YOu can
+find the github repo <a href="https://github.com/jcerise/CuriousWall">here</a> and you can see a working copy of it hosted <a href="http://www.cw.readmythings.com">here</a>. My goal is to keep hacking on this project until it is suitable for production (its currently got some large, gaping SEO issues, which I may write about in another post). After I decided that Curious Wall was not in suitable state to run as a blog, I started looking for alternatives.</p>
+
+<p>I was showing off my advances on Curious Wall as a blog to a friend of
+mine, <a href="http://twitter.com/BruceEckel">Bruce Eckel</a>, and we got to
+talking about blog software. He mentioned a project I had never heard of
+called <a href="http://octopress.org/">Octopress</a>. I was sold the
+second I set it up. First off, it uses Jekyll to generate itself, so the
+whole site is static, which means fast loading times. Second, it comes
+out of the box with all sort of nifty features such as code
+highlighting, Github integration, and gist support. Third, its fun to
+use. I can write my blog content in Vim, run a rake task, and
+automatically generate the site. Running a second rake task uploads the
+site to my server via Rsync. Simple, enjoyable, and awesome.</p>
+
+<p>Hopefully, this all combined will give me more reason to more frequently
+write posts about things, which you can then read (hence, the name of
+the site). I would eventually like to transfer this all to my fork of
+Curious Wall, but thats a ways off, and as things stand, I think I like
+Octopress too much to shift away it.</p>
+
+<p>I'll be adding things as I see a need, maybe some of it will be helpful,
+maybe not. Either way, if you're bored of Wordpress and looking for
+something a little more friendly, give Octopress a try, its a great
+project.</p>
+]]></content>
+  </entry>
+  
+</feed>

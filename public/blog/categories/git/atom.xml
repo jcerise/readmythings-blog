@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: git | Read My Things]]></title>
+  <link href="http://www.readmythings.com/blog/categories/git/atom.xml" rel="self"/>
+  <link href="http://www.readmythings.com/"/>
+  <updated>2013-08-31T23:48:26-06:00</updated>
+  <id>http://www.readmythings.com/</id>
+  <author>
+    <name><![CDATA[Jeremy Cerise]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploying Meteor to Heroku]]></title>
+    <link href="http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/"/>
+    <updated>2012-10-18T16:19:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku</id>
+    <content type="html"><![CDATA[<p>Recently, while looking into and learning about Node.js, I ran across a
+new framework utilizing Node called <a href="http://www.meteor.com" title="MeteorJS">Meteor</a>. Since I just started playing
+with it yesterday, I'll not go too deeply into the specifics of it,
+because I have yet to figure them out. One thing I did figure out
+though, and which I feel is not immediately obvious (thus why I'm
+writing about it), is how to deploy a Meteor app to
+<a href="http://www.heroku.com" title="Heroku">Heroku</a>.</p>
+
+<!-- more -->
+
+
+<p>I don't have a development server set up at the moment, so I wanted
+somewhere I could run my test Meteor apps from, and preferably use
+<a href="http://c9.io" title="Cloud9 IDE">Cloud9</a> to develop from any of my machines.
+Heroku fits the bill for this perfectly. Heres how to get a Meteor
+environment setup in Heroku so you can deploy you apps to the cloud.</p>
+
+<p>First off, install Meteor:
+<code>
+curl https://install.meteor.com | /bin/sh
+</code>
+Then, create a new app:
+<code>
+meteor create newapp
+</code>
+From here, you can run
+<code>
+meteor
+</code>
+from the newly created newapp project directory to see your app running
+locally (on localhost:3000).
+The next step is to intialize a new git repo in your app directory:
+<code>
+git init
+git add .
+git commit -m 'Initial commit of Meteor app'
+</code>
+At this point, we are finally ready to set up our Heroku environment.
+I'm using the Heroku command line client (part of the <a href="http://toolbelt.herokuapp.com" title="Heroku Toolbelt">Heroku
+Toolbelt</a>) to run the
+following commands:
+<code>
+heroku create --stack cedar --buildpack https://github.com/jordansissel/heroku-buildpack-meteor.git
+</code>
+What this does is create a new Heroku instance with a buildpack that
+downloads the latest version of Meteor, and installs it on the Heroku
+instance. The buildpack repo can be found <a href="https://github.com/jordansissel/heroku-buildpack-meteor">here</a>(many thanks to jordansissel for creating this buildpack).
+A quick note at this point that's important to note: Your Heroku account
+must be verified before this will work. If your account is not verified,
+you will get weird errors when running the next step.
+Finally, now that we've created our new Heroku instance with a Meteor
+buildpack, we can push our app up to Heroku and run it:
+<code>
+git push heroku master
+</code>
+If you don't receive any errors, you should now be able to visit your
+instance URL and see your shiny new Meteor app up and running!</p>
+]]></content>
+  </entry>
+  
+</feed>

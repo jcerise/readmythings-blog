@@ -1,0 +1,533 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Generating realistic (two dimensional) caverns with cellular automata - Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="I have been building a roguelike game in python for a while now. For
+those not familiar with this particular type of game, I will point you
+here. &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner"><article class="post">
+	<h1 class="title">Generating Realistic (Two Dimensional) Caverns With Cellular Automata</h1>
+	<div class="entry-content"><p>I have been building a roguelike game in python for a while now. For
+those not familiar with this particular type of game, I will point you
+<a href="http://en.wikipedia.org/wiki/Roguelike">here</a>. Basically, its, as my
+girlfriend put it, &#8220;About the nerdiest thing you can possibly do with a
+computer&#8221;. Opinions aside, roguelikes are very enjoyable to write, as
+I&#8217;ve found, as you can focus solely on gameplay, and not worry about
+fancy rendering engines and lots of 3D math.</p>
+
+<!-- more -->
+
+
+<p>One of the staples of a roguelike is the dungeon generation algorithm.
+Since 99% of a traditional roguelike is spent crawling through a dungeon
+in search of monsters to slay and epic loot to pocket, its rather
+important that the player is presented with an interesting series of
+paths and environments to traipse through. Many roguelikes challenge the
+player with naviagting exclusively dungeon environments (straight
+corridors, connecting rooms, which in turn are usually rectangular in
+shape), and not much else. To be sure, my roguelike (<a href="https://github.com/jcerise/DungeonCrawler">DungeonCrawler</a>),
+employs this formula, but I felt it lacked some variety. It gets tedious
+constantly exploring the same environment over and over again. So, after
+a little thought about what other types of subterranean labyrinth I
+could throw at the player, I settled on caverns. Caverns present an
+interesting challenge, as they need to look natural, which means no
+straight lines, and also unpredictable corridors and rooms.</p>
+
+<p>I ended up implementing a celluar automata algorithm to accomplish my
+cavern building. Cellular automata, if you are unfamiliar, is the
+concept behind Conways Game of Life. Basically, each tile in our cavern
+can have one of two states: floor or wall. We start out by randomly
+filling our entire map with tiles. I use the ratio of roughly 40% wall
+tiles to 60% floor tiles (this tends to generate the nicest looking
+results, in my experience).</p>
+
+<figure class='code'><figcaption><span>Cavern Generation - Step 1  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">42</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/dungeoncrawler/step_1.png"></p>
+
+<p>As you can see, it looks pretty chaotic at this point. This will form
+the basis for our cavern. For the record, brown tiles are floor, and
+grey tiles are wall. The next step is to actually run our cellular
+automata algorithm. I started out using the 4-5 rule (if a tile was a
+wall and 4 or more of its neighbors are walls, it becomes a wall, or if
+it was not a wall and 5 or more of its neighbors are walls). We pass
+over each tile, and check its neighbors, and decide if it should be a
+wall or a floor, based on the above stated criteria. The code to
+accomplish this looks like this:</p>
+
+<figure class='code'><figcaption><span>Cavern Generation - Step 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])):</span>
+</span><span class='line'>            <span class="n">wall_count_one_away</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_walls_n_steps_away</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">wall_count_two_away</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_walls_n_steps_away</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">tile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">wall_count_one_away</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">wall_count_two_away</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#This tile becomes a wall</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">False</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We make several passes like this, in my case 5. Each pass will smooth
+out the cavern a little bit more, as the code decides, based on the
+tiles neighbors, what each tile should be. If there are a lot of walls
+around it, it should probably be a wall, and vice versa. Below you can
+see the results of this after one pass (comapre it to our starting map
+above):</p>
+
+<p><img src="/images/dungeoncrawler/step_2.png"></p>
+
+<p>And the results after 2 passes (these are obviously not the same map, I
+had some trouble doing a step by step on one map, but it still
+illustrates the idea all the same):</p>
+
+<p><img src="/images/dungeoncrawler/step_3.png"></p>
+
+<p>As you can see, the cavern starts to take shape, as each tile is changed
+to reflect the evironment around it. Finally, after five passes, we end
+up with this:</p>
+
+<p><img src="/images/dungeoncrawler/finish_2.png"></p>
+
+<p>After our five initial passes, I make 4 more using a slightly modified
+algorithm. These passes mainly smooth out the caves a little more, and
+get rid of any isolated walls or floor tiles that are left sitting in
+the middle of nowhere:</p>
+
+<figure class='code'><figcaption><span>Cavern Generation - Step 3  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])):</span>
+</span><span class='line'>            <span class="n">wall_count_one_away</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_walls_n_steps_away</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">tile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">wall_count_one_away</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#This tile becomes a wall</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">False</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After these last few iterations, our cave now looks like this:</p>
+
+<p><img src="/images/dungeoncrawler/step_4.png"></p>
+
+<p>At this point, we have a pretty nice, realistic looking cavern,
+but you may notice that there is the potential for rooms that the player
+cannot reach, and that are not connected to the main cavern. This is not
+ideal, as the player is randomly placed in the cavern when the game
+starts, and we do not want him to start in a small cavern not connected
+to the main cavern.</p>
+
+<p>To fix this problem, we need to identify each &#8216;cavern&#8217; that is part of
+the larger cave complex. I define a &#8216;cavern&#8217; as a space that is not
+connected to any other spaces. So, in the above example, there would be
+five caverns, one main, large cavern, and then four smaller caverns
+spread out around the edges. Once we have identified the individual caverns in our cave
+system, we can then either connect them all (not ideal, as it looks
+un-natural), or fill in all but the largest cavern (this is the approach
+I take, as it maintains a realistic feel). First, how do we go about
+identifying the various caverns that compose our cave system?</p>
+
+<p>I used a flood fill algorithm to accomplish this. But, before we do
+anything else, we need to seal up the edges of the map, so the player
+cannot wander off the screen (my game does have scrolling maps yet, what
+you see is the entire map). This is done as follows:</p>
+
+<figure class='code'><figcaption><span>Sealing the edges of the map  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Before we do anything else, we need to seal up the edges of the map, so the player cannot wander out into</span>
+</span><span class='line'><span class="c">#nothingness. We do this by walking around the edges of the map and making them all wall</span>
+</span><span class='line'><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Okay, now that we&#8217;ve done that, lets get on to the floodfill algorithm.
+The basic logic behind it is this: We loop through every tile on the map
+checking for two things. First, have visited this tile already, and
+second, is this tile a wall. If either of those is true, we ignore the
+tile and move on. When we find a valid, unvisited, floor tile, we add
+the tile to an array that will contain all tiles in the particular
+cavern (we know we are in a cavern by the fact that this tile is floor).
+Next, using our newly added cavern tile, we pop it off of the array, and
+check all of its neighbors. If they are unvisited, and not a wall, they
+are added to the cavern array. We run this sequence for each valid
+neighbor, and each of their valid neighbors. When the array is finally
+empty, we have exhausted all tiles in the current cavern, and now know
+every tile that the cavern is composed of (when I pop the tile off the
+cavern array, I push it onto a record keeping array, so we have record
+of every tile in the cavern). At this point, all tiles in the current
+cavern have been visited, so they will be ignored going forward. We
+continue in this manner until all individual caverns in the cave system
+have been mapped out. The code to accomplish this is as follows:</p>
+
+<figure class='code'><figcaption><span>Cavern Floodfill Detection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Now, begin looping through the map, looking for individual caverns</span>
+</span><span class='line'><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+</span><span class='line'>        <span class="c">#Grab the tile at the current coordinates</span>
+</span><span class='line'>        <span class="n">tile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c">#Set up some empty arrays to hold our current cavern</span>
+</span><span class='line'>        <span class="n">cavern</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">total_cavern_area</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c">#Ensure this is a non-wall tile that has not already been visited</span>
+</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="n">tile</span><span class="o">.</span><span class="n">visited</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">tile</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>            <span class="c">#If it meets the criteria, add it to the new cavern</span>
+</span><span class='line'>            <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tile</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c">#Loop through all potentially valid cavern tiles for this cavern, and see if they are actually part</span>
+</span><span class='line'>            <span class="c">#of the cavern or not. If they are, add them to the total, and grab all four of their neighbors</span>
+</span><span class='line'>            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">cavern</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#Get the last item in the candidate list</span>
+</span><span class='line'>                <span class="n">node</span> <span class="o">=</span> <span class="n">cavern</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">visited</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                    <span class="c">#Mark the tile as visited</span>
+</span><span class='line'>                    <span class="n">node</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">total_cavern_area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c">#Append the tile to the west to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
+</span><span class='line'>                    <span class="c">#Append the tile to the east to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
+</span><span class='line'>                    <span class="c">#Append the tile to the north to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>                    <span class="c">#Append the tile to the south to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c">#Cavern detection and construction completed, so append this cavern to the list of all caverns</span>
+</span><span class='line'>            <span class="n">caverns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_cavern_area</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="c">#This was not a valid cavern candidate, so mark it as visited so we dont bother with it again</span>
+</span><span class='line'>            <span class="n">tile</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The caverns variable is a list off all detected individual caverns. So,
+the end result is that we now know about every individual cavern on the
+map, and can act on them accordingly. The next thing we do is to sort
+the caverns by smallest to largest. This way, the largest cavern
+(usually what we want to be the main cavern) will be last, and we can
+remove it from the list of caverns. Since we are going to fill in all
+but the main cavern, we want to ignore it, so removing it from the list
+is the easiest and safest way to do this. Then, we simply fill in all
+the remaining caverns:</p>
+
+<figure class='code'><figcaption><span>Sort caverns by size and remove largest  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Sort the cavern arrays so the largest cavern (the main cavern) is the last item, then remove it from the list</span>
+</span><span class='line'><span class="c">#All the remaining caverns will be filled in</span>
+</span><span class='line'><span class="n">sorted_caverns</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">caverns</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="n">main_cave</span> <span class="o">=</span> <span class="n">sorted_caverns</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#Fill in each of the remaining caverns, as they are not part of the main cave. This will ensure that every</span>
+</span><span class='line'><span class="c">#part of the cavern system is accessible to the player</span>
+</span><span class='line'><span class="k">for</span> <span class="n">cave</span> <span class="ow">in</span> <span class="n">sorted_caverns</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">tile</span> <span class="ow">in</span> <span class="n">cave</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>        <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And finally, we are left with one main cavern that player can reach
+every part of:</p>
+
+<p><img src="/images/dungeoncrawler/final_final.png"></p>
+
+<p>Pretty nice, if I do say so myself. I&#8217;ve included some more examples of
+the final product below. Feel free to comment with any questions or
+critiques in the comments below. I hope this has been helpful, or at the
+very least midly interesting. YOu can also check out my roguelike in
+progress on github <a href="https://github.com/jcerise/DungeonCrawler">here</a>, so
+feel free to check out the code and give it a shot. I&#8217;m also open to
+pull request as well, if you feel so inclined.</p>
+
+<p><img src="/images/dungeoncrawler/final_final_1.png"></p>
+
+<p><img src="/images/dungeoncrawler/final_final_2.png"></p>
+
+<p><img src="/images/dungeoncrawler/final_final_3.png"></p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-20T15:25:00-07:00" pubdate data-updated="true">Feb 20<span>th</span>, 2013</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/gamedev/'>gamedev</a>, <a class='category' href='/blog/categories/procedural-generation/'>procedural generation</a>, <a class='category' href='/blog/categories/python/'>python</a>, <a class='category' href='/blog/categories/roguelikes/'>roguelikes</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata/#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.readmythings.com/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata/';
+        var disqus_url = 'http://www.readmythings.com/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,527 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="I&#8217;ve been recently fiddling around with the Play Web Framework, and while doing some intial setup stuff, I ran across some little gotchas I &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner">
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2013/08/08/play-framework-setup-gotchas/">Play Framework Setup Gotchas</a></h1>
+	<div class="entry-content">
+		<p>I&#8217;ve been recently fiddling around with the <a href="http://www.playframework.com/">Play Web Framework</a>, and while doing some intial setup stuff, I ran across some little gotchas I thought would be worth sharing, to save some poor soul some grief in the future (maybe).</p>
+
+<p>First up, I&#8217;m running Ubuntu 13.04, so everything here assumes the same.
+So, I installed Play by downloading everything, un-tarred it into a
+directory, added the play script into my path so I could call it from
+where ever, and everything was hunky dory. I set up a new PLay project
+using Intellij IDEA, and was off to the races&#8230;except when I tried to
+run the play script from inside my project. I could successfully run it
+elsewhere, but running the play script within a project yielded the
+following error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/home/jeremy/play-2.1.0/play: 60: /home/jeremy/play-2.1.0/play: /home/jeremy/play-2.1.0/framework/build: Permission denied</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Okay, so it turns out, for some reason, I needed to set the file
+specified, path-to-play/framework/build, to executable. Weird. Running
+this fixed the issue:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>chmod +x /home/jeremy/play-2.1.0/framework/build</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Alright, so that was fixed, now back to actually writing code!</p>
+
+<p>Until&#8230;I created some unit tests (and the pre-generated projects
+actually come with some as well out of the box), and upon trying to run
+them via Inetllij IDEA, I was presented with an odd error stating that
+the class ApplicationTest could not be loaded&#8230;and all my tests were
+failing. Looks like Intellij is not great at running Play tests out of
+the box.</p>
+
+<p>The fix I found was the add an additional step before launch (via the
+run configuration) to run an external tool, the play script with the test:compile
+parameter in this case. This makes Intellij load up play before it tries to run the
+tests, which in turn allows the tests run correctly and pass.</p>
+
+<p>So, there you go. The permissions issue might just be something with my
+OS, but the Intellij issue is defintely something you might run into
+(and it can be found <a href="http://youtrack.jetbrains.com/issue/SCL-5152">here</a> in youtrack). Hope this helps someone!</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-08T22:56:00-06:00" pubdate data-updated="true">Aug 8<span>th</span>, 2013</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/gotchas/'>Gotchas</a>, <a class='category' href='/blog/categories/java/'>Java</a>, <a class='category' href='/blog/categories/play/'>Play</a>, <a class='category' href='/blog/categories/scala/'>Scala</a>, <a class='category' href='/blog/categories/web-framework/'>Web Framework</a>, <a class='category' href='/blog/categories/unit-tests/'>unit tests</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2013/08/08/play-framework-setup-gotchas//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata/">Generating Realistic (Two Dimensional) Caverns With Cellular Automata</a></h1>
+	<div class="entry-content">
+		<p>I have been building a roguelike game in python for a while now. For
+those not familiar with this particular type of game, I will point you
+<a href="http://en.wikipedia.org/wiki/Roguelike">here</a>. Basically, its, as my
+girlfriend put it, &#8220;About the nerdiest thing you can possibly do with a
+computer&#8221;. Opinions aside, roguelikes are very enjoyable to write, as
+I&#8217;ve found, as you can focus solely on gameplay, and not worry about
+fancy rendering engines and lots of 3D math.</p>
+
+
+		
+		<a href="/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata/" class="more-link">Read on &rarr;</a>
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-20T15:25:00-07:00" pubdate data-updated="true">Feb 20<span>th</span>, 2013</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/gamedev/'>gamedev</a>, <a class='category' href='/blog/categories/procedural-generation/'>procedural generation</a>, <a class='category' href='/blog/categories/python/'>python</a>, <a class='category' href='/blog/categories/roguelikes/'>roguelikes</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2012/12/04/polybius-square-encoding-in-python/">Polybius Square Encoding in Python</a></h1>
+	<div class="entry-content">
+		<p>I was recently trying to figure out an efficient way to programatically
+encode or decode a string into an ADFGX cipher, a (by todays standards)
+simple cipher that involves fractionating the string through use of a
+Polybius square (using a mixed alphabet), and then performing a columnar
+transposition on the result. If you want to read more about the cipher
+itself, Wikipedia has a good write up of it <a href="http://en.wikipedia.org/wiki/ADFGVX_cipher">here</a>.</p>
+
+<p>I don&#8217;t want to go too far into the specifics of the cipher itself, as
+this post is meant to focus on the first part, encoding a string using a
+Ploybius square, and, what I feel at least, is a rather clever way
+of doing it.
+i
+		
+		<a href="/blog/2012/12/04/polybius-square-encoding-in-python/" class="more-link">Read on &rarr;</a>
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-04T16:17:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/crytopraphy/'>crytopraphy</a>, <a class='category' href='/blog/categories/math/'>math</a>, <a class='category' href='/blog/categories/python/'>python</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/12/04/polybius-square-encoding-in-python//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku/">ROOT_URL When Deploying Meteor to Heroku</a></h1>
+	<div class="entry-content">
+		<p>I guess you could call this a followup to my last post about deploying
+Meteor applications to Heroku (found
+<a href="http://readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/">here</a>).
+I ran into this little error today while trying to get a new Meteor
+application up and running via Heroku. Basically, my app was crashing,
+and running:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku logs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>yielded the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>app/packages/meteor/url_common.js:14
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:       throw new Error("Must pass options.rootUrl or set ROOT_URL in the server
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:             ^
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]: Error: Must pass options.rootUrl or set ROOT_URL in the server environment
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Object.Meteor.absoluteUrl (app/packages/meteor/url_common.js:14:13)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at app/packages/accounts-password/email_templates.js:3:20
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at /app/.meteor/local/build/server/server.js:107:21
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Array.forEach (native)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at run (/app/.meteor/local/build/server/server.js:93:7)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Function._.each._.forEach (/app/.meteor/local/build/server/underscore.js:76:11)
+</span><span class='line'>2012-10-26T22:08:40+00:00 heroku[web.1]: Process exited with status 1
+</span><span class='line'>2012-10-26T22:08:40+00:00 heroku[web.1]: State changed from starting to crashed</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not overly helpful, as it didn&#8217;t seem to be a Meteor specific error. And
+it turns out it wasn&#8217;t, at least not wholly. I found that Heroku has a
+config command where you can set things like the ROOT_URL, and for some
+reason, in this case it needed it set manually (I&#8217;ve never had to use
+this before, so maybe I&#8217;m just doing something wrong). Anyways, I ran:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku config:add ROOT_URL=[Heroku instance URL]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And, lo and behold, my app stopped crashing and started working.</p>
+
+<p>I would like to know why I had to manually set this in this case, so if
+anyone knows, give a shout in the comments. I&#8217;ll try and figure it out
+on my own in the meantime.</p>
+
+		
+		
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-26T16:23:00-06:00" pubdate data-updated="true">Oct 26<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/js/'>js</a>, <a class='category' href='/blog/categories/meteor/'>meteor</a>, <a class='category' href='/blog/categories/meteorjs/'>meteorjs</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2012/10/18/deploying-meteor-to-heroku/">Deploying Meteor to Heroku</a></h1>
+	<div class="entry-content">
+		<p>Recently, while looking into and learning about Node.js, I ran across a
+new framework utilizing Node called <a href="http://www.meteor.com" title="MeteorJS">Meteor</a>. Since I just started playing
+with it yesterday, I&#8217;ll not go too deeply into the specifics of it,
+because I have yet to figure them out. One thing I did figure out
+though, and which I feel is not immediately obvious (thus why I&#8217;m
+writing about it), is how to deploy a Meteor app to
+<a href="http://www.heroku.com" title="Heroku">Heroku</a>.</p>
+
+
+		
+		<a href="/blog/2012/10/18/deploying-meteor-to-heroku/" class="more-link">Read on &rarr;</a>
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-18T16:19:00-06:00" pubdate data-updated="true">Oct 18<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/js/'>js</a>, <a class='category' href='/blog/categories/meteor/'>meteor</a>, <a class='category' href='/blog/categories/meteorjs/'>meteorjs</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/10/18/deploying-meteor-to-heroku//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2012/09/26/node-dot-js-project-setup-gotcha-for-a-beginner/">Node.js Project Setup Gotcha (for a Beginner)</a></h1>
+	<div class="entry-content">
+		<p>I&#8217;ve been exploring Node.js recently, mainly because I&#8217;ve been hearing
+so much about it from all corners of the web development world. I plan
+to write a more in depth series of posts about my experiences with it at
+some point in the future, but for now, I&#8217;d like to point out a quick
+little gotcha (and its solution) that I ran across.</p>
+
+
+		
+		<a href="/blog/2012/09/26/node-dot-js-project-setup-gotcha-for-a-beginner/" class="more-link">Read on &rarr;</a>
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-26T22:27:00-06:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/gotchas/'>gotchas</a>, <a class='category' href='/blog/categories/node/'>node</a>, <a class='category' href='/blog/categories/node-js/'>node.js</a>, <a class='category' href='/blog/categories/npm/'>npm</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/09/26/node-dot-js-project-setup-gotcha-for-a-beginner//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+
+    <article class="post">
+	<h1 class="title"><a href="/blog/2012/09/17/moving-away-from-wordpress/">Moving Away From Wordpress</a></h1>
+	<div class="entry-content">
+		<p>Recently, my old hosting contract ran out. This did two things:</p>
+
+<ol>
+  <li>Lock down all my old blog content so I couldn&#8217;t access it unless I
+renewed
+  <li>Make me re-asses my hosting plan, domain name, and general blog
+philosophies
+</ol>
+
+
+<p>The former bummed me out quite a bit, as I had some decent (and decently
+well travelled) blog posts about various aspects of Android development.
+It kind of stings to lose those, but, oh well. This led me to the
+latter: it was  probably time to move on anyways. My old blog at
+advancingbackwards (which now redirects here) was being neglected, and
+it wasn&#8217;t much fun to write on it anymore. Why was that?</p>
+
+
+		
+		<a href="/blog/2012/09/17/moving-away-from-wordpress/" class="more-link">Read on &rarr;</a>
+	</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-17T16:05:00-06:00" pubdate data-updated="true">Sep 17<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/general/'>general</a>, <a class='category' href='/blog/categories/rant/'>rant</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/09/17/moving-away-from-wordpress//index.html#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+<nav id="pagenavi">
+    
+    
+    <div class="center"><a href="/blog/archives">Blog Archives</a></div>
+</nav></div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>

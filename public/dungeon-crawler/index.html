@@ -1,0 +1,259 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>dungeon crawler - Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="Dungeon Crawler is a simple (but rapidly growing more complex) roguelike game, written in Python, and utilizing the Doryen library (libtcod). As far &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner"><article class="page">
+    
+    <h1 class="title">Dungeon Crawler</h1>
+    
+    <div class="entry-content"><p>Dungeon Crawler is a simple (but rapidly growing more complex) roguelike game, written in Python, and utilizing the 
+<a href="http://doryen.eptalys.net/libtcod/"i>Doryen library (libtcod)</a>. As far as roguelikes go, its fairly complete, and
+relatively true to its origins (or at least it will be, there are things like some mouse controls I would like to remove eventually).
+You are cast as an adventurer, trekking through a perilous dungeon in search of&#8230;something (haven&#8217;t added an end game yet). Along
+the way, you will encounter fearsome monsters, find magical treasures, and prove your worth as the greatest adventurer of all time.</p>
+
+<p>The game is still a work in progress, but all the sources can be found on github. I&#8217;m actively developing on the game, as there are 
+quite a few features that still want to add. I&#8217;ve outlined a roadmap for the game below, so you can get an idea of where I would like
+to take the game (eventually).</p>
+
+<p>Github repository: <a href="https://github.com/jcerise/DungeonCrawler">Dungeon Crawler</a></p>
+<hr />
+<p><strong>Roadmap</strong>
+TODO:
+<ul>
+  <li>Items and Equipment</li>
+  <ul>
+    <li>Add basic types of equipment</li>
+    <ul>
+      <li>Swords</li>
+      <li>Axes</li>
+      <li>Maces</li>
+      <li>Daggers</li>
+      <li>Bows</li>
+      <li>Crossbows</li>
+      <li>Staves</li>
+      <li>Staffs</li>
+      <li>Wands</li>
+      <li>Cuirasses</li>
+      <li>Helms</li>
+      <li>Gloves</li>
+      <li>Boots</li>
+      <li>Greaves</li>
+      <li>Rings</li>
+    </ul>
+    <li>Add weapon and equipment modifiers (+1, +2, +3 etc.)</li>
+    <li>Add equipment prefixes (Burning, Barbed, Cold, Frightening, etc.)</li>
+    <li>Add equipment suffixes (Of fear, of hate, of light, of cleaving etc.)</li>
+    <li>Add legendary, named equipment</li>
+    <li>Add equipment details screen (accessible from inventory page)</li>
+    <li>Add inventory screen, showing detailed equipment layout on player</li>
+  </ul>
+  <li>Combat System</li>
+  <ul>
+    <li>Add random damage and defense to each attack, using open ended D6 rolls (everything is possible, though improbably)</li>
+    <li>Add Damage types (light, cold, dark, fire, etc)</li>
+    <li>Add abilities to equipment that triggers on attack or defense</li>
+  </ul>
+  <li>Artificial Intelligence</li>
+  <ul>
+    <li>Add more advanced path finding algorithm (possibly variation on Djikstras Algorithm)</li>
+    <li>Add more Ai types (cowardly, groups, fearless, stupid etc)</li>
+    <li>Add more types of monsters to utilize the new AI types</li>
+  </ul>
+  <li>Player Character</li>
+  <ul>
+    <li>Add a class system</li>
+    <li>Add mana and spell casting system (currently magic is only available through the use of scrolls)</li>
+    <li>Add more indepth PC stats</li>
+    <ul>
+      <li>Strength</li>
+      <li>Agility</li>
+      <li>Intelligence</li>
+      <li>Fortitude</li>
+      <li>Cunning</li>
+      <li>Speed</li>
+    </ul>
+    <li>Add more in depth character information screen (possibly permanent display on side of screen)</li>
+  </ul>
+  <li>Map generation</li>
+  <ul>
+    <li>Add more types of maps</li>
+    <ul>
+      <li>Over world (forest, town)</li>
+      <li>Underground fortress</li>
+      <li>Half cave, half dungeon</li>
+      <li>Goblin/Orc warrens</li>
+      <li>Gnome village</li>
+      <li>Dwarven mines</li>
+      <li>Dwarven Halls</li>
+      <li>Goblin mines</li>
+      <li>Hell</li>
+      <li>Underground forest</li>
+      <li>Ancient temple</li>
+      <li>More&#8230;</li>
+    </ul>
+    <li>Add more intelligent item placement</li>
+    <li>Add doors</li>
+    <li>Add scrolling, larger maps</li>
+    <li>Terrain features</li>
+    <ul>
+      <li>Chasms</li>
+      <li>Hidden doors and chambers</li>
+      <li>Bridges</li>
+    </ul>
+  </ul>
+</ul>
+
+<p>This is an incomplete list, more of a mind dump than anything else.</p>
+
+
+
+</div>
+</article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.readmythings.com/dungeon-crawler/index.html';
+        var disqus_url = 'http://www.readmythings.com/dungeon-crawler/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: heroku | Read My Things]]></title>
+  <link href="http://www.readmythings.com/blog/categories/heroku/atom.xml" rel="self"/>
+  <link href="http://www.readmythings.com/"/>
+  <updated>2013-08-31T23:48:26-06:00</updated>
+  <id>http://www.readmythings.com/</id>
+  <author>
+    <name><![CDATA[Jeremy Cerise]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ROOT_URL when deploying Meteor to Heroku]]></title>
+    <link href="http://www.readmythings.com/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku/"/>
+    <updated>2012-10-26T16:23:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku</id>
+    <content type="html"><![CDATA[<p>I guess you could call this a followup to my last post about deploying
+Meteor applications to Heroku (found
+<a href="http://readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/">here</a>).
+I ran into this little error today while trying to get a new Meteor
+application up and running via Heroku. Basically, my app was crashing,
+and running:
+<code>
+heroku logs
+</code>
+yielded the following:
+<code>
+app/packages/meteor/url_common.js:14
+2012-10-26T22:08:39+00:00 app[web.1]:       throw new Error("Must pass options.rootUrl or set ROOT_URL in the server
+2012-10-26T22:08:39+00:00 app[web.1]:             ^
+2012-10-26T22:08:39+00:00 app[web.1]: Error: Must pass options.rootUrl or set ROOT_URL in the server environment
+2012-10-26T22:08:39+00:00 app[web.1]:     at Object.Meteor.absoluteUrl (app/packages/meteor/url_common.js:14:13)
+2012-10-26T22:08:39+00:00 app[web.1]:     at app/packages/accounts-password/email_templates.js:3:20
+2012-10-26T22:08:39+00:00 app[web.1]:     at /app/.meteor/local/build/server/server.js:107:21
+2012-10-26T22:08:39+00:00 app[web.1]:     at Array.forEach (native)
+2012-10-26T22:08:39+00:00 app[web.1]:     at run (/app/.meteor/local/build/server/server.js:93:7)
+2012-10-26T22:08:39+00:00 app[web.1]:     at Function._.each._.forEach (/app/.meteor/local/build/server/underscore.js:76:11)
+2012-10-26T22:08:40+00:00 heroku[web.1]: Process exited with status 1
+2012-10-26T22:08:40+00:00 heroku[web.1]: State changed from starting to crashed
+</code>
+Not overly helpful, as it didn't seem to be a Meteor specific error. And
+it turns out it wasn't, at least not wholly. I found that Heroku has a
+config command where you can set things like the ROOT_URL, and for some
+reason, in this case it needed it set manually (I've never had to use
+this before, so maybe I'm just doing something wrong). Anyways, I ran:
+<code>
+heroku config:add ROOT_URL=[Heroku instance URL]
+</code>
+And, lo and behold, my app stopped crashing and started working.</p>
+
+<p>I would like to know why I had to manually set this in this case, so if
+anyone knows, give a shout in the comments. I'll try and figure it out
+on my own in the meantime.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Deploying Meteor to Heroku]]></title>
+    <link href="http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/"/>
+    <updated>2012-10-18T16:19:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku</id>
+    <content type="html"><![CDATA[<p>Recently, while looking into and learning about Node.js, I ran across a
+new framework utilizing Node called <a href="http://www.meteor.com" title="MeteorJS">Meteor</a>. Since I just started playing
+with it yesterday, I'll not go too deeply into the specifics of it,
+because I have yet to figure them out. One thing I did figure out
+though, and which I feel is not immediately obvious (thus why I'm
+writing about it), is how to deploy a Meteor app to
+<a href="http://www.heroku.com" title="Heroku">Heroku</a>.</p>
+
+<!-- more -->
+
+
+<p>I don't have a development server set up at the moment, so I wanted
+somewhere I could run my test Meteor apps from, and preferably use
+<a href="http://c9.io" title="Cloud9 IDE">Cloud9</a> to develop from any of my machines.
+Heroku fits the bill for this perfectly. Heres how to get a Meteor
+environment setup in Heroku so you can deploy you apps to the cloud.</p>
+
+<p>First off, install Meteor:
+<code>
+curl https://install.meteor.com | /bin/sh
+</code>
+Then, create a new app:
+<code>
+meteor create newapp
+</code>
+From here, you can run
+<code>
+meteor
+</code>
+from the newly created newapp project directory to see your app running
+locally (on localhost:3000).
+The next step is to intialize a new git repo in your app directory:
+<code>
+git init
+git add .
+git commit -m 'Initial commit of Meteor app'
+</code>
+At this point, we are finally ready to set up our Heroku environment.
+I'm using the Heroku command line client (part of the <a href="http://toolbelt.herokuapp.com" title="Heroku Toolbelt">Heroku
+Toolbelt</a>) to run the
+following commands:
+<code>
+heroku create --stack cedar --buildpack https://github.com/jordansissel/heroku-buildpack-meteor.git
+</code>
+What this does is create a new Heroku instance with a buildpack that
+downloads the latest version of Meteor, and installs it on the Heroku
+instance. The buildpack repo can be found <a href="https://github.com/jordansissel/heroku-buildpack-meteor">here</a>(many thanks to jordansissel for creating this buildpack).
+A quick note at this point that's important to note: Your Heroku account
+must be verified before this will work. If your account is not verified,
+you will get weird errors when running the next step.
+Finally, now that we've created our new Heroku instance with a Meteor
+buildpack, we can push our app up to Heroku and run it:
+<code>
+git push heroku master
+</code>
+If you don't receive any errors, you should now be able to visit your
+instance URL and see your shiny new Meteor app up and running!</p>
+]]></content>
+  </entry>
+  
+</feed>

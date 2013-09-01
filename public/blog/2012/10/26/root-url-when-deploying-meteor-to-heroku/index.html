@@ -1,0 +1,237 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ROOT_URL when deploying Meteor to Heroku - Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="I guess you could call this a followup to my last post about deploying
+Meteor applications to Heroku (found
+here).
+I ran into this little error today &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner"><article class="post">
+	<h1 class="title">ROOT_URL When Deploying Meteor to Heroku</h1>
+	<div class="entry-content"><p>I guess you could call this a followup to my last post about deploying
+Meteor applications to Heroku (found
+<a href="http://readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/">here</a>).
+I ran into this little error today while trying to get a new Meteor
+application up and running via Heroku. Basically, my app was crashing,
+and running:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku logs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>yielded the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>app/packages/meteor/url_common.js:14
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:       throw new Error("Must pass options.rootUrl or set ROOT_URL in the server
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:             ^
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]: Error: Must pass options.rootUrl or set ROOT_URL in the server environment
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Object.Meteor.absoluteUrl (app/packages/meteor/url_common.js:14:13)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at app/packages/accounts-password/email_templates.js:3:20
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at /app/.meteor/local/build/server/server.js:107:21
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Array.forEach (native)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at run (/app/.meteor/local/build/server/server.js:93:7)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Function._.each._.forEach (/app/.meteor/local/build/server/underscore.js:76:11)
+</span><span class='line'>2012-10-26T22:08:40+00:00 heroku[web.1]: Process exited with status 1
+</span><span class='line'>2012-10-26T22:08:40+00:00 heroku[web.1]: State changed from starting to crashed</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not overly helpful, as it didn&#8217;t seem to be a Meteor specific error. And
+it turns out it wasn&#8217;t, at least not wholly. I found that Heroku has a
+config command where you can set things like the ROOT_URL, and for some
+reason, in this case it needed it set manually (I&#8217;ve never had to use
+this before, so maybe I&#8217;m just doing something wrong). Anyways, I ran:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku config:add ROOT_URL=[Heroku instance URL]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And, lo and behold, my app stopped crashing and started working.</p>
+
+<p>I would like to know why I had to manually set this in this case, so if
+anyone knows, give a shout in the comments. I&#8217;ll try and figure it out
+on my own in the meantime.</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-26T16:23:00-06:00" pubdate data-updated="true">Oct 26<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/js/'>js</a>, <a class='category' href='/blog/categories/meteor/'>meteor</a>, <a class='category' href='/blog/categories/meteorjs/'>meteorjs</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku/#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.readmythings.com/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku/';
+        var disqus_url = 'http://www.readmythings.com/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>

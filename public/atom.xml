@@ -1,0 +1,886 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Read My Things]]></title>
+  <link href="http://www.readmythings.com/atom.xml" rel="self"/>
+  <link href="http://www.readmythings.com/"/>
+  <updated>2013-08-08T23:21:19-06:00</updated>
+  <id>http://www.readmythings.com/</id>
+  <author>
+    <name><![CDATA[Jeremy Cerise]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Play Framework Setup Gotchas]]></title>
+    <link href="http://www.readmythings.com/blog/2013/08/08/play-framework-setup-gotchas/"/>
+    <updated>2013-08-08T22:56:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2013/08/08/play-framework-setup-gotchas</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve been recently fiddling around with the <a href="http://www.playframework.com/">Play Web Framework</a>, and while doing some intial setup stuff, I ran across some little gotchas I thought would be worth sharing, to save some poor soul some grief in the future (maybe).</p>
+
+<p>First up, I&#8217;m running Ubuntu 13.04, so everything here assumes the same.
+So, I installed Play by downloading everything, un-tarred it into a
+directory, added the play script into my path so I could call it from
+where ever, and everything was hunky dory. I set up a new PLay project
+using Intellij IDEA, and was off to the races&#8230;except when I tried to
+run the play script from inside my project. I could successfully run it
+elsewhere, but running the play script within a project yielded the
+following error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/home/jeremy/play-2.1.0/play: 60: /home/jeremy/play-2.1.0/play: /home/jeremy/play-2.1.0/framework/build: Permission denied</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Okay, so it turns out, for some reason, I needed to set the file
+specified, path-to-play/framework/build, to executable. Weird. Running
+this fixed the issue:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>chmod +x /home/jeremy/play-2.1.0/framework/build</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Alright, so that was fixed, now back to actually writing code!</p>
+
+<p>Until&#8230;I created some unit tests (and the pre-generated projects
+actually come with some as well out of the box), and upon trying to run
+them via Inetllij IDEA, I was presented with an odd error stating that
+the class ApplicationTest could not be loaded&#8230;and all my tests were
+failing. Looks like Intellij is not great at running Play tests out of
+the box.</p>
+
+<p>The fix I found was the add an additional step before launch (via the
+run configuration) to run an external tool, the play script with the test:compile
+parameter in this case. This makes Intellij load up play before it tries to run the
+tests, which in turn allows the tests run correctly and pass.</p>
+
+<p>So, there you go. The permissions issue might just be something with my
+OS, but the Intellij issue is defintely something you might run into
+(and it can be found <a href="http://youtrack.jetbrains.com/issue/SCL-5152">here</a> in youtrack). Hope this helps someone!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Generating realistic (two dimensional) caverns with cellular automata]]></title>
+    <link href="http://www.readmythings.com/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata/"/>
+    <updated>2013-02-20T15:25:00-07:00</updated>
+    <id>http://www.readmythings.com/blog/2013/02/20/generating-realistic-caverns-with-cellular-automata</id>
+    <content type="html"><![CDATA[<p>I have been building a roguelike game in python for a while now. For
+those not familiar with this particular type of game, I will point you
+<a href="http://en.wikipedia.org/wiki/Roguelike">here</a>. Basically, its, as my
+girlfriend put it, &#8220;About the nerdiest thing you can possibly do with a
+computer&#8221;. Opinions aside, roguelikes are very enjoyable to write, as
+I&#8217;ve found, as you can focus solely on gameplay, and not worry about
+fancy rendering engines and lots of 3D math.</p>
+
+<!-- more -->
+
+
+<p>One of the staples of a roguelike is the dungeon generation algorithm.
+Since 99% of a traditional roguelike is spent crawling through a dungeon
+in search of monsters to slay and epic loot to pocket, its rather
+important that the player is presented with an interesting series of
+paths and environments to traipse through. Many roguelikes challenge the
+player with naviagting exclusively dungeon environments (straight
+corridors, connecting rooms, which in turn are usually rectangular in
+shape), and not much else. To be sure, my roguelike (<a href="https://github.com/jcerise/DungeonCrawler">DungeonCrawler</a>),
+employs this formula, but I felt it lacked some variety. It gets tedious
+constantly exploring the same environment over and over again. So, after
+a little thought about what other types of subterranean labyrinth I
+could throw at the player, I settled on caverns. Caverns present an
+interesting challenge, as they need to look natural, which means no
+straight lines, and also unpredictable corridors and rooms.</p>
+
+<p>I ended up implementing a celluar automata algorithm to accomplish my
+cavern building. Cellular automata, if you are unfamiliar, is the
+concept behind Conways Game of Life. Basically, each tile in our cavern
+can have one of two states: floor or wall. We start out by randomly
+filling our entire map with tiles. I use the ratio of roughly 40% wall
+tiles to 60% floor tiles (this tends to generate the nicest looking
+results, in my experience).</p>
+
+<figure class='code'><figcaption><span>Cavern Generation - Step 1  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">42</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/step_1.png"></p>
+
+<p>As you can see, it looks pretty chaotic at this point. This will form
+the basis for our cavern. For the record, brown tiles are floor, and
+grey tiles are wall. The next step is to actually run our cellular
+automata algorithm. I started out using the 4-5 rule (if a tile was a
+wall and 4 or more of its neighbors are walls, it becomes a wall, or if
+it was not a wall and 5 or more of its neighbors are walls). We pass
+over each tile, and check its neighbors, and decide if it should be a
+wall or a floor, based on the above stated criteria. The code to
+accomplish this looks like this:</p>
+
+<figure class='code'><figcaption><span>Cavern Generation - Step 2  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])):</span>
+</span><span class='line'>            <span class="n">wall_count_one_away</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_walls_n_steps_away</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">wall_count_two_away</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_walls_n_steps_away</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">tile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">wall_count_one_away</span> <span class="o">&gt;=</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">wall_count_two_away</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#This tile becomes a wall</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">False</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We make several passes like this, in my case 5. Each pass will smooth
+out the cavern a little bit more, as the code decides, based on the
+tiles neighbors, what each tile should be. If there are a lot of walls
+around it, it should probably be a wall, and vice versa. Below you can
+see the results of this after one pass (comapre it to our starting map
+above):</p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/step_2.png"></p>
+
+<p>And the results after 2 passes (these are obviously not the same map, I
+had some trouble doing a step by step on one map, but it still
+illustrates the idea all the same):</p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/step_3.png"></p>
+
+<p>As you can see, the cavern starts to take shape, as each tile is changed
+to reflect the evironment around it. Finally, after five passes, we end
+up with this:</p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/finish_2.png"></p>
+
+<p>After our five initial passes, I make 4 more using a slightly modified
+algorithm. These passes mainly smooth out the caves a little more, and
+get rid of any isolated walls or floor tiles that are left sitting in
+the middle of nowhere:</p>
+
+<figure class='code'><figcaption><span>Cavern Generation - Step 3  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)):</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])):</span>
+</span><span class='line'>            <span class="n">wall_count_one_away</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_walls_n_steps_away</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">tile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">wall_count_one_away</span> <span class="o">&gt;=</span> <span class="mi">5</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#This tile becomes a wall</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>                <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">False</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After these last few iterations, our cave now looks like this:</p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/step_4.png"></p>
+
+<p>At this point, we have a pretty nice, realistic looking cavern,
+but you may notice that there is the potential for rooms that the player
+cannot reach, and that are not connected to the main cavern. This is not
+ideal, as the player is randomly placed in the cavern when the game
+starts, and we do not want him to start in a small cavern not connected
+to the main cavern.</p>
+
+<p>To fix this problem, we need to identify each &#8216;cavern&#8217; that is part of
+the larger cave complex. I define a &#8216;cavern&#8217; as a space that is not
+connected to any other spaces. So, in the above example, there would be
+five caverns, one main, large cavern, and then four smaller caverns
+spread out around the edges. Once we have identified the individual caverns in our cave
+system, we can then either connect them all (not ideal, as it looks
+un-natural), or fill in all but the largest cavern (this is the approach
+I take, as it maintains a realistic feel). First, how do we go about
+identifying the various caverns that compose our cave system?</p>
+
+<p>I used a flood fill algorithm to accomplish this. But, before we do
+anything else, we need to seal up the edges of the map, so the player
+cannot wander off the screen (my game does have scrolling maps yet, what
+you see is the entire map). This is done as follows:</p>
+
+<figure class='code'><figcaption><span>Sealing the edges of the map  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Before we do anything else, we need to seal up the edges of the map, so the player cannot wander out into</span>
+</span><span class='line'><span class="c">#nothingness. We do this by walking around the edges of the map and making them all wall</span>
+</span><span class='line'><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Okay, now that we&#8217;ve done that, lets get on to the floodfill algorithm.
+The basic logic behind it is this: We loop through every tile on the map
+checking for two things. First, have visited this tile already, and
+second, is this tile a wall. If either of those is true, we ignore the
+tile and move on. When we find a valid, unvisited, floor tile, we add
+the tile to an array that will contain all tiles in the particular
+cavern (we know we are in a cavern by the fact that this tile is floor).
+Next, using our newly added cavern tile, we pop it off of the array, and
+check all of its neighbors. If they are unvisited, and not a wall, they
+are added to the cavern array. We run this sequence for each valid
+neighbor, and each of their valid neighbors. When the array is finally
+empty, we have exhausted all tiles in the current cavern, and now know
+every tile that the cavern is composed of (when I pop the tile off the
+cavern array, I push it onto a record keeping array, so we have record
+of every tile in the cavern). At this point, all tiles in the current
+cavern have been visited, so they will be ignored going forward. We
+continue in this manner until all individual caverns in the cave system
+have been mapped out. The code to accomplish this is as follows:</p>
+
+<figure class='code'><figcaption><span>Cavern Floodfill Detection  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Now, begin looping through the map, looking for individual caverns</span>
+</span><span class='line'><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">):</span>
+</span><span class='line'>        <span class="c">#Grab the tile at the current coordinates</span>
+</span><span class='line'>        <span class="n">tile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c">#Set up some empty arrays to hold our current cavern</span>
+</span><span class='line'>        <span class="n">cavern</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="n">total_cavern_area</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c">#Ensure this is a non-wall tile that has not already been visited</span>
+</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="n">tile</span><span class="o">.</span><span class="n">visited</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">tile</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>            <span class="c">#If it meets the criteria, add it to the new cavern</span>
+</span><span class='line'>            <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tile</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c">#Loop through all potentially valid cavern tiles for this cavern, and see if they are actually part</span>
+</span><span class='line'>            <span class="c">#of the cavern or not. If they are, add them to the total, and grab all four of their neighbors</span>
+</span><span class='line'>            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">cavern</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="c">#Get the last item in the candidate list</span>
+</span><span class='line'>                <span class="n">node</span> <span class="o">=</span> <span class="n">cavern</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>                <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">visited</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                    <span class="c">#Mark the tile as visited</span>
+</span><span class='line'>                    <span class="n">node</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">total_cavern_area</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="c">#Append the tile to the west to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
+</span><span class='line'>                    <span class="c">#Append the tile to the east to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
+</span><span class='line'>                    <span class="c">#Append the tile to the north to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>                    <span class="c">#Append the tile to the south to the cavern array</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_wall</span><span class="p">():</span>
+</span><span class='line'>                        <span class="n">cavern</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">][</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c">#Cavern detection and construction completed, so append this cavern to the list of all caverns</span>
+</span><span class='line'>            <span class="n">caverns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">total_cavern_area</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="c">#This was not a valid cavern candidate, so mark it as visited so we dont bother with it again</span>
+</span><span class='line'>            <span class="n">tile</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The caverns variable is a list off all detected individual caverns. So,
+the end result is that we now know about every individual cavern on the
+map, and can act on them accordingly. The next thing we do is to sort
+the caverns by smallest to largest. This way, the largest cavern
+(usually what we want to be the main cavern) will be last, and we can
+remove it from the list of caverns. Since we are going to fill in all
+but the main cavern, we want to ignore it, so removing it from the list
+is the easiest and safest way to do this. Then, we simply fill in all
+the remaining caverns:</p>
+
+<figure class='code'><figcaption><span>Sort caverns by size and remove largest  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#Sort the cavern arrays so the largest cavern (the main cavern) is the last item, then remove it from the list</span>
+</span><span class='line'><span class="c">#All the remaining caverns will be filled in</span>
+</span><span class='line'><span class="n">sorted_caverns</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">caverns</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="n">main_cave</span> <span class="o">=</span> <span class="n">sorted_caverns</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#Fill in each of the remaining caverns, as they are not part of the main cave. This will ensure that every</span>
+</span><span class='line'><span class="c">#part of the cavern system is accessible to the player</span>
+</span><span class='line'><span class="k">for</span> <span class="n">cave</span> <span class="ow">in</span> <span class="n">sorted_caverns</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">tile</span> <span class="ow">in</span> <span class="n">cave</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">tile</span><span class="o">.</span><span class="n">blocked</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>        <span class="n">tile</span><span class="o">.</span><span class="n">block_sight</span> <span class="o">=</span> <span class="bp">True</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And finally, we are left with one main cavern that player can reach
+every part of:</p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/final_final.png"></p>
+
+<p>Pretty nice, if I do say so myself. I&#8217;ve included some more examples of
+the final product below. Feel free to comment with any questions or
+critiques in the comments below. I hope this has been helpful, or at the
+very least midly interesting. YOu can also check out my roguelike in
+progress on github <a href="https://github.com/jcerise/DungeonCrawler">here</a>, so
+feel free to check out the code and give it a shot. I&#8217;m also open to
+pull request as well, if you feel so inclined.</p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/final_final_1.png"></p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/final_final_2.png"></p>
+
+<p><img src="http://www.readmythings.com/images/dungeoncrawler/final_final_3.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Polybius Square Encoding in Python]]></title>
+    <link href="http://www.readmythings.com/blog/2012/12/04/polybius-square-encoding-in-python/"/>
+    <updated>2012-12-04T16:17:00-07:00</updated>
+    <id>http://www.readmythings.com/blog/2012/12/04/polybius-square-encoding-in-python</id>
+    <content type="html"><![CDATA[<p>I was recently trying to figure out an efficient way to programatically
+encode or decode a string into an ADFGX cipher, a (by todays standards)
+simple cipher that involves fractionating the string through use of a
+Polybius square (using a mixed alphabet), and then performing a columnar
+transposition on the result. If you want to read more about the cipher
+itself, Wikipedia has a good write up of it <a href="http://en.wikipedia.org/wiki/ADFGVX_cipher">here</a>.</p>
+
+<p>I don&#8217;t want to go too far into the specifics of the cipher itself, as
+this post is meant to focus on the first part, encoding a string using a
+Ploybius square, and, what I feel at least, is a rather clever way
+of doing it.
+i<!-- more -->
+So, a Polybius sqaure essentially looks like this:</p>
+
+<table>
+  <tr>
+    <th> </th>
+    <th>A</th>
+    <th>D</th>
+    <th>F</th>
+    <th>G</th>
+    <th>X</th>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>b</td>
+    <td>t</td>
+    <td>a</td>
+    <td>l</td>
+    <td>p</td>
+  </tr>
+  <tr>
+    <td>D</td>
+    <td>d</td>
+    <td>h</td>
+    <td>o</td>
+    <td>z</td>
+    <td>k</td>
+  </tr>
+  <tr>
+    <td>F</td>
+    <td>q</td>
+    <td>f</td>
+    <td>v</td>
+    <td>s</td>
+    <td>n</td>
+  </tr>
+  <tr>
+    <td>G</td>
+    <td>g</td>
+    <td>j</td>
+    <td>c</td>
+    <td>u</td>
+    <td>x</td>
+  </tr>
+  <tr>
+    <td>X</td>
+    <td>m</td>
+    <td>r</td>
+    <td>e</td>
+    <td>w</td>
+    <td>y</td>
+  </tr>
+</table>
+
+
+<p>To encode a string, you simply take the row header of the letter, and
+concatenate the column header of the letter. So, the letter a would be
+AF, b would be AA, c would be GF and so on. You may notice that the
+square is missing the letter i. In the interest of keeping it square, i
+has been combined with j. There is a slightly modified version of the
+ADFGX cipher, the ADFGVX cipher, that can accomodate for the missing i,
+as well as several other characters, such as numbers.</p>
+
+<p>Anyways, at first glance, doing these encodings programatically looks
+simple, just look up the row and column of each letter, and combine
+them. And to be sure, in theory, it is fairly simple. My first attempt
+involved making two, two dimensional associative  arrays, and looping through them
+(using the letters ADFGX as the keys) and getting the corresponding
+ciper text as the result. While this worked, it did not work well, and
+was subject to one major problem: what if you wanted to change the mixed
+alphabet? That would involve rewriting each array by hand. Not much fun.
+So, my goal was to make it easier to change out the mixed alphabet, and
+also find something that would run faster than O(n<sup>2).</sup></p>
+
+<p>The solution I eventually stumbled upon involves representing the mixed
+alphabet not as an array, or arrays, but as a simple string. So, the
+above mixed alphabet would look like &#8220;btalpdhozkqfvsngjcuxmrewy&#8221;. Using
+what we know about the workings of the Polybius square, we can make some
+assumptions about what letters correspond to which column and row
+headers.First off, to get the row, we can use simple integer division on
+the position of each character. We know that the polybius square is 5 x
+5, so, each row will have 5 characters. We can divide the character
+position in the mixed alphabet string by 5, and figure out the row its
+in. 0/5 = 0, 1/5 = 0, 2/5 = 0 etc. Since we are using ints rather than
+floats, we can be assured to only get whole numbers. If you continue in
+this, you&#8217;ll see that once we get to char[5], we&#8217;ve moved to a new row (5/5 =
+1).Since we have at most 25 characters in our square, this works quite
+nicely.</p>
+
+<p>Next, to determine the column, we can use a similar method, replacing
+the division with the modulus function. Using the index of each
+character, char[n], and calculating char[n] modulus 5, we can easily
+figure out which column each character will fall into. 0 % 5 = 0, 1 %
+5 = 1 &#8230; 7 % 5 = 2 &#8230;10 % 5 = 0 &#8230; 17 % 5 = 2 &#8230; 24 % 5 = 4 and so
+on.</p>
+
+<p>Each of these methods will generate a number from 0 to 4, which we can
+then use as an index into the string &#8220;ADFGX&#8221; to figure out which letter
+each corresponds to in the Polybius square. Then, just concatenate both
+letters (with the column being the first), and done, you have an encoded
+letter.</p>
+
+<p>The best part, this runs in O(n). Oh, and you can specify a mixed
+alphabet very easily. The code, in Python, I wrote for this
+is as follows:</p>
+
+<figure class='code'><figcaption><span>encode_as_polybius_square  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">encode_as_polybius_square</span><span class="p">(</span><span class="n">mixed_alphabet</span><span class="p">,</span> <span class="n">cipher_text</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">encoded_text</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;ADFGX&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#Strip all spaces and lowercase the whole string</span>
+</span><span class='line'>    <span class="n">cipher_text</span> <span class="o">=</span> <span class="n">cipher_text</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">cipher_text</span><span class="p">:</span>
+</span><span class='line'>        <span class="c">#Get the row header of the character, generating an</span>
+</span><span class='line'>        <span class="c">#index into the key</span>
+</span><span class='line'>        <span class="n">column_char</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">mixed_alphabet</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">character</span><span class="p">)</span> <span class="o">/</span> <span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>        <span class="c">#Get the column header in the same manner</span>
+</span><span class='line'>        <span class="n">row_char</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">mixed_alphabet</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">character</span><span class="p">)</span> <span class="o">%</span> <span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>        <span class="c">#Combine the row header with the column header</span>
+</span><span class='line'>        <span class="n">encoded_text</span> <span class="o">+=</span> <span class="n">column_char</span> <span class="o">+</span> <span class="n">row_char</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">encoded_text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, there you have it. A fast, simple way to encode a string based on a
+Polybius square.</p>
+
+<p>Next time, decoding the same string. Haven&#8217;t quite thought that out
+yet&#8230;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ROOT_URL when deploying Meteor to Heroku]]></title>
+    <link href="http://www.readmythings.com/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku/"/>
+    <updated>2012-10-26T16:23:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/10/26/root-url-when-deploying-meteor-to-heroku</id>
+    <content type="html"><![CDATA[<p>I guess you could call this a followup to my last post about deploying
+Meteor applications to Heroku (found
+<a href="http://readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/">here</a>).
+I ran into this little error today while trying to get a new Meteor
+application up and running via Heroku. Basically, my app was crashing,
+and running:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku logs</span></code></pre></td></tr></table></div></figure>
+
+
+<p>yielded the following:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>app/packages/meteor/url_common.js:14
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:       throw new Error("Must pass options.rootUrl or set ROOT_URL in the server
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:             ^
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]: Error: Must pass options.rootUrl or set ROOT_URL in the server environment
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Object.Meteor.absoluteUrl (app/packages/meteor/url_common.js:14:13)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at app/packages/accounts-password/email_templates.js:3:20
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at /app/.meteor/local/build/server/server.js:107:21
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Array.forEach (native)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at run (/app/.meteor/local/build/server/server.js:93:7)
+</span><span class='line'>2012-10-26T22:08:39+00:00 app[web.1]:     at Function._.each._.forEach (/app/.meteor/local/build/server/underscore.js:76:11)
+</span><span class='line'>2012-10-26T22:08:40+00:00 heroku[web.1]: Process exited with status 1
+</span><span class='line'>2012-10-26T22:08:40+00:00 heroku[web.1]: State changed from starting to crashed</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not overly helpful, as it didn&#8217;t seem to be a Meteor specific error. And
+it turns out it wasn&#8217;t, at least not wholly. I found that Heroku has a
+config command where you can set things like the ROOT_URL, and for some
+reason, in this case it needed it set manually (I&#8217;ve never had to use
+this before, so maybe I&#8217;m just doing something wrong). Anyways, I ran:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku config:add ROOT_URL=[Heroku instance URL]</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And, lo and behold, my app stopped crashing and started working.</p>
+
+<p>I would like to know why I had to manually set this in this case, so if
+anyone knows, give a shout in the comments. I&#8217;ll try and figure it out
+on my own in the meantime.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Deploying Meteor to Heroku]]></title>
+    <link href="http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/"/>
+    <updated>2012-10-18T16:19:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku</id>
+    <content type="html"><![CDATA[<p>Recently, while looking into and learning about Node.js, I ran across a
+new framework utilizing Node called <a href="http://www.meteor.com" title="MeteorJS">Meteor</a>. Since I just started playing
+with it yesterday, I&#8217;ll not go too deeply into the specifics of it,
+because I have yet to figure them out. One thing I did figure out
+though, and which I feel is not immediately obvious (thus why I&#8217;m
+writing about it), is how to deploy a Meteor app to
+<a href="http://www.heroku.com" title="Heroku">Heroku</a>.</p>
+
+<!-- more -->
+
+
+<p>I don&#8217;t have a development server set up at the moment, so I wanted
+somewhere I could run my test Meteor apps from, and preferably use
+<a href="http://c9.io" title="Cloud9 IDE">Cloud9</a> to develop from any of my machines.
+Heroku fits the bill for this perfectly. Heres how to get a Meteor
+environment setup in Heroku so you can deploy you apps to the cloud.</p>
+
+<p>First off, install Meteor:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl https://install.meteor.com | /bin/sh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then, create a new app:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor create newapp</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here, you can run</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor</span></code></pre></td></tr></table></div></figure>
+
+
+<p>from the newly created newapp project directory to see your app running
+locally (on localhost:3000).
+The next step is to intialize a new git repo in your app directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git init
+</span><span class='line'>git add .
+</span><span class='line'>git commit -m 'Initial commit of Meteor app'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point, we are finally ready to set up our Heroku environment.
+I&#8217;m using the Heroku command line client (part of the <a href="http://toolbelt.herokuapp.com" title="Heroku Toolbelt">Heroku
+Toolbelt</a>) to run the
+following commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku create --stack cedar --buildpack https://github.com/jordansissel/heroku-buildpack-meteor.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is create a new Heroku instance with a buildpack that
+downloads the latest version of Meteor, and installs it on the Heroku
+instance. The buildpack repo can be found <a href="https://github.com/jordansissel/heroku-buildpack-meteor">here</a>(many thanks to jordansissel for creating this buildpack).
+A quick note at this point that&#8217;s important to note: Your Heroku account
+must be verified before this will work. If your account is not verified,
+you will get weird errors when running the next step.
+Finally, now that we&#8217;ve created our new Heroku instance with a Meteor
+buildpack, we can push our app up to Heroku and run it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you don&#8217;t receive any errors, you should now be able to visit your
+instance URL and see your shiny new Meteor app up and running!</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Node.js project setup gotcha (for a beginner)]]></title>
+    <link href="http://www.readmythings.com/blog/2012/09/26/node-dot-js-project-setup-gotcha-for-a-beginner/"/>
+    <updated>2012-09-26T22:27:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/09/26/node-dot-js-project-setup-gotcha-for-a-beginner</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve been exploring Node.js recently, mainly because I&#8217;ve been hearing
+so much about it from all corners of the web development world. I plan
+to write a more in depth series of posts about my experiences with it at
+some point in the future, but for now, I&#8217;d like to point out a quick
+little gotcha (and its solution) that I ran across.</p>
+
+<!-- more -->
+
+
+<p>When setting up a new Node project, particularly one that uses Express
+(installed via NPM), I was getting weird errors. Namely, when running</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>node app.js</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I was getting the following error:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>module.js:340
+</span><span class='line'>    throw err;
+</span><span class='line'>Error: Cannot find module 'express'
+</span><span class='line'>    at Function.Module._resolveFilename (module.js:338:15)
+</span><span class='line'>    at Function.Module._load (module.js:280:25)
+</span><span class='line'>    at Module.require (module.js:362:17)
+</span><span class='line'>    at require (module.js:378:17)
+</span><span class='line'>    at Object.&lt;anonymous&gt; (/home/jeremy/Documents/node_projects/nodepad/app.js:6:15)
+</span><span class='line'>    at Module._compile (module.js:449:26)
+</span><span class='line'>    at Object.Module._extensions..js (module.js:467:10)
+</span><span class='line'>    at Module.load (module.js:356:32)
+</span><span class='line'>    at Function.Module._load (module.js:312:12)
+</span><span class='line'>    at Module.runMain (module.js:492:10)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Strange, especially when NPM is supposed to handle setting up all the
+paths for everything correctly. I googled around a little, and some
+things I found said that newer versions of NPM install modules into
+/usr/local/lib/node_modules, whereas Node is actually looking for them
+in /usr/local/lib/node. No big deal, I can just copy or symlink the
+contents of /usr/local/lib/node_modules into /usr/local/lib/node. But
+then I would have to do that every time I install a module. Messy, and
+inconvinient. Turns out there is a better way.</p>
+
+<p>First up, make sure express (or whatever module is causing the problem)
+is installed globally by including the &#8216;-g- flag:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm install express -g</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then create your new project as normal:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>express app_name</span></code></pre></td></tr></table></div></figure>
+
+
+<p>cd into your new app directory, and then run:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>npm link express</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which should make sure you app can access all the modules in the new
+location. Running node app.js will now start up Node like you would
+normally expect. Hope this helps save some one a few minutes of
+frustration.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Moving away from Wordpress]]></title>
+    <link href="http://www.readmythings.com/blog/2012/09/17/moving-away-from-wordpress/"/>
+    <updated>2012-09-17T16:05:00-06:00</updated>
+    <id>http://www.readmythings.com/blog/2012/09/17/moving-away-from-wordpress</id>
+    <content type="html"><![CDATA[<p>Recently, my old hosting contract ran out. This did two things:</p>
+
+<ol>
+  <li>Lock down all my old blog content so I couldn&#8217;t access it unless I
+renewed
+  <li>Make me re-asses my hosting plan, domain name, and general blog
+philosophies
+</ol>
+
+
+<p>The former bummed me out quite a bit, as I had some decent (and decently
+well travelled) blog posts about various aspects of Android development.
+It kind of stings to lose those, but, oh well. This led me to the
+latter: it was  probably time to move on anyways. My old blog at
+advancingbackwards (which now redirects here) was being neglected, and
+it wasn&#8217;t much fun to write on it anymore. Why was that?</p>
+
+<!--more-->
+
+
+<p>The main reason was that I really am not overly fond of Wordpress. It
+makes creating a blog really simple: install, add theme, create content.
+Great, if thats all you want to do. But, I have always been a bit of a
+hacker when it comes to these things. I like having control over the
+systems I&#8217;m using, and concurrently, I also like to have a strong
+working knowledge of whats making things happen as I use them. With
+Wordpress, I was never really motivated to learn what was making it
+tick. I just never really cared. And that, largely, is the reason I
+stopped using it.</p>
+
+<p>I had decided a while back that I was going to ditch my Wordpress site
+at some point, I just kept putting it off due to other obligations. My
+hosting expiring was just the kick in the pants I needed. Originally,
+after the incident, I had planned on launching (prematurely, it turned
+out) a piece of software I had been hacking on for a while that is based
+on a neat little forum project I stumbled across a while back. YOu can
+find the github repo <a href="https://github.com/jcerise/CuriousWall">here</a> and you can see a working copy of it hosted <a href="http://www.cw.readmythings.com">here</a>. My goal is to keep hacking on this project until it is suitable for production (its currently got some large, gaping SEO issues, which I may write about in another post). After I decided that Curious Wall was not in suitable state to run as a blog, I started looking for alternatives.</p>
+
+<p>I was showing off my advances on Curious Wall as a blog to a friend of
+mine, <a href="http://twitter.com/BruceEckel">Bruce Eckel</a>, and we got to
+talking about blog software. He mentioned a project I had never heard of
+called <a href="http://octopress.org/">Octopress</a>. I was sold the
+second I set it up. First off, it uses Jekyll to generate itself, so the
+whole site is static, which means fast loading times. Second, it comes
+out of the box with all sort of nifty features such as code
+highlighting, Github integration, and gist support. Third, its fun to
+use. I can write my blog content in Vim, run a rake task, and
+automatically generate the site. Running a second rake task uploads the
+site to my server via Rsync. Simple, enjoyable, and awesome.</p>
+
+<p>Hopefully, this all combined will give me more reason to more frequently
+write posts about things, which you can then read (hence, the name of
+the site). I would eventually like to transfer this all to my fork of
+Curious Wall, but thats a ways off, and as things stand, I think I like
+Octopress too much to shift away it.</p>
+
+<p>I&#8217;ll be adding things as I see a need, maybe some of it will be helpful,
+maybe not. Either way, if you&#8217;re bored of Wordpress and looking for
+something a little more friendly, give Octopress a try, its a great
+project.</p>
+]]></content>
+  </entry>
+  
+</feed>

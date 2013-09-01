@@ -1,0 +1,241 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Moving away from Wordpress - Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="Recently, my old hosting contract ran out. This did two things: Lock down all my old blog content so I couldn&#8217;t access it unless I
+renewed Make &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner"><article class="post">
+	<h1 class="title">Moving Away From Wordpress</h1>
+	<div class="entry-content"><p>Recently, my old hosting contract ran out. This did two things:</p>
+
+<ol>
+  <li>Lock down all my old blog content so I couldn&#8217;t access it unless I
+renewed
+  <li>Make me re-asses my hosting plan, domain name, and general blog
+philosophies
+</ol>
+
+
+<p>The former bummed me out quite a bit, as I had some decent (and decently
+well travelled) blog posts about various aspects of Android development.
+It kind of stings to lose those, but, oh well. This led me to the
+latter: it was  probably time to move on anyways. My old blog at
+advancingbackwards (which now redirects here) was being neglected, and
+it wasn&#8217;t much fun to write on it anymore. Why was that?</p>
+
+<!--more-->
+
+
+<p>The main reason was that I really am not overly fond of Wordpress. It
+makes creating a blog really simple: install, add theme, create content.
+Great, if thats all you want to do. But, I have always been a bit of a
+hacker when it comes to these things. I like having control over the
+systems I&#8217;m using, and concurrently, I also like to have a strong
+working knowledge of whats making things happen as I use them. With
+Wordpress, I was never really motivated to learn what was making it
+tick. I just never really cared. And that, largely, is the reason I
+stopped using it.</p>
+
+<p>I had decided a while back that I was going to ditch my Wordpress site
+at some point, I just kept putting it off due to other obligations. My
+hosting expiring was just the kick in the pants I needed. Originally,
+after the incident, I had planned on launching (prematurely, it turned
+out) a piece of software I had been hacking on for a while that is based
+on a neat little forum project I stumbled across a while back. YOu can
+find the github repo <a href="https://github.com/jcerise/CuriousWall">here</a> and you can see a working copy of it hosted <a href="http://www.cw.readmythings.com">here</a>. My goal is to keep hacking on this project until it is suitable for production (its currently got some large, gaping SEO issues, which I may write about in another post). After I decided that Curious Wall was not in suitable state to run as a blog, I started looking for alternatives.</p>
+
+<p>I was showing off my advances on Curious Wall as a blog to a friend of
+mine, <a href="http://twitter.com/BruceEckel">Bruce Eckel</a>, and we got to
+talking about blog software. He mentioned a project I had never heard of
+called <a href="http://octopress.org/">Octopress</a>. I was sold the
+second I set it up. First off, it uses Jekyll to generate itself, so the
+whole site is static, which means fast loading times. Second, it comes
+out of the box with all sort of nifty features such as code
+highlighting, Github integration, and gist support. Third, its fun to
+use. I can write my blog content in Vim, run a rake task, and
+automatically generate the site. Running a second rake task uploads the
+site to my server via Rsync. Simple, enjoyable, and awesome.</p>
+
+<p>Hopefully, this all combined will give me more reason to more frequently
+write posts about things, which you can then read (hence, the name of
+the site). I would eventually like to transfer this all to my fork of
+Curious Wall, but thats a ways off, and as things stand, I think I like
+Octopress too much to shift away it.</p>
+
+<p>I&#8217;ll be adding things as I see a need, maybe some of it will be helpful,
+maybe not. Either way, if you&#8217;re bored of Wordpress and looking for
+something a little more friendly, give Octopress a try, its a great
+project.</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-17T16:05:00-06:00" pubdate data-updated="true">Sep 17<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/general/'>general</a>, <a class='category' href='/blog/categories/rant/'>rant</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/09/17/moving-away-from-wordpress/#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.readmythings.com/blog/2012/09/17/moving-away-from-wordpress/';
+        var disqus_url = 'http://www.readmythings.com/blog/2012/09/17/moving-away-from-wordpress/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>

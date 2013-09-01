@@ -1,0 +1,253 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Deploying Meteor to Heroku - Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="Recently, while looking into and learning about Node.js, I ran across a
+new framework utilizing Node called Meteor. Since I just started playing
+with &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner"><article class="post">
+	<h1 class="title">Deploying Meteor to Heroku</h1>
+	<div class="entry-content"><p>Recently, while looking into and learning about Node.js, I ran across a
+new framework utilizing Node called <a href="http://www.meteor.com" title="MeteorJS">Meteor</a>. Since I just started playing
+with it yesterday, I&#8217;ll not go too deeply into the specifics of it,
+because I have yet to figure them out. One thing I did figure out
+though, and which I feel is not immediately obvious (thus why I&#8217;m
+writing about it), is how to deploy a Meteor app to
+<a href="http://www.heroku.com" title="Heroku">Heroku</a>.</p>
+
+<!-- more -->
+
+
+<p>I don&#8217;t have a development server set up at the moment, so I wanted
+somewhere I could run my test Meteor apps from, and preferably use
+<a href="http://c9.io" title="Cloud9 IDE">Cloud9</a> to develop from any of my machines.
+Heroku fits the bill for this perfectly. Heres how to get a Meteor
+environment setup in Heroku so you can deploy you apps to the cloud.</p>
+
+<p>First off, install Meteor:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl https://install.meteor.com | /bin/sh</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then, create a new app:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor create newapp</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From here, you can run</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>meteor</span></code></pre></td></tr></table></div></figure>
+
+
+<p>from the newly created newapp project directory to see your app running
+locally (on localhost:3000).
+The next step is to intialize a new git repo in your app directory:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git init
+</span><span class='line'>git add .
+</span><span class='line'>git commit -m 'Initial commit of Meteor app'</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At this point, we are finally ready to set up our Heroku environment.
+I&#8217;m using the Heroku command line client (part of the <a href="http://toolbelt.herokuapp.com" title="Heroku Toolbelt">Heroku
+Toolbelt</a>) to run the
+following commands:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>heroku create --stack cedar --buildpack https://github.com/jordansissel/heroku-buildpack-meteor.git</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this does is create a new Heroku instance with a buildpack that
+downloads the latest version of Meteor, and installs it on the Heroku
+instance. The buildpack repo can be found <a href="https://github.com/jordansissel/heroku-buildpack-meteor">here</a>(many thanks to jordansissel for creating this buildpack).
+A quick note at this point that&#8217;s important to note: Your Heroku account
+must be verified before this will work. If your account is not verified,
+you will get weird errors when running the next step.
+Finally, now that we&#8217;ve created our new Heroku instance with a Meteor
+buildpack, we can push our app up to Heroku and run it:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>git push heroku master</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you don&#8217;t receive any errors, you should now be able to visit your
+instance URL and see your shiny new Meteor app up and running!</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-18T16:19:00-06:00" pubdate data-updated="true">Oct 18<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/git/'>git</a>, <a class='category' href='/blog/categories/heroku/'>heroku</a>, <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/js/'>js</a>, <a class='category' href='/blog/categories/meteor/'>meteor</a>, <a class='category' href='/blog/categories/meteorjs/'>meteorjs</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/10/18/deploying-meteor-to-heroku/#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/';
+        var disqus_url = 'http://www.readmythings.com/blog/2012/10/18/deploying-meteor-to-heroku/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>

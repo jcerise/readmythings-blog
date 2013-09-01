@@ -1,0 +1,341 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Polybius Square Encoding in Python - Read My Things</title>
+	<meta name="author" content="Jeremy Cerise">
+
+	
+	<meta name="description" content="I was recently trying to figure out an efficient way to programatically
+encode or decode a string into an ADFGX cipher, a (by todays standards) &hellip;">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link href="/atom.xml" rel="alternate" title="Read My Things" type="application/atom+xml">
+	<link rel="canonical" href="">
+	<link href="/favicon.png" rel="shortcut icon">
+	<link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+	<!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	
+</head>
+
+<body>
+	<header id="header" class="inner"><h1><a href="/">Read My Things</a></h1>
+<nav id="main-nav"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+<nav id="mobile-nav">
+	<div class="alignleft menu">
+		<a class="button">Menu</a>
+		<div class="container"><ul class="main">
+	<li><a href="/">Blog</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/projects/">Projects</a></li>
+	<li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</div>
+	</div>
+	<div class="alignright search">
+		<a class="button"></a>
+		<div class="container">
+			<form action="http://google.com/search" method="get">
+				<input type="text" name="q" results="0">
+				<input type="hidden" name="q" value="site:www.readmythings.com">
+			</form>
+		</div>
+	</div>
+</nav>
+<nav id="sub-nav" class="alignright">
+	<div class="social">
+		
+		
+		
+		<a class="twitter" href="http://twitter.com/jcerise" title="Twitter">Twitter</a>
+		
+		
+		<a class="github" href="https://github.com/jcerise" title="GitHub">GitHub</a>
+		
+		
+		
+		
+		
+		<a class="rss" href="/atom.xml" title="RSS">RSS</a>
+		
+	</div>
+	<form class="search" action="http://google.com/search" method="get">
+		<input class="alignright" type="text" name="q" results="0">
+		<input type="hidden" name="q" value="site:www.readmythings.com">
+	</form>
+</nav>
+
+</header>
+	<div id="content" class="inner"><article class="post">
+	<h1 class="title">Polybius Square Encoding in Python</h1>
+	<div class="entry-content"><p>I was recently trying to figure out an efficient way to programatically
+encode or decode a string into an ADFGX cipher, a (by todays standards)
+simple cipher that involves fractionating the string through use of a
+Polybius square (using a mixed alphabet), and then performing a columnar
+transposition on the result. If you want to read more about the cipher
+itself, Wikipedia has a good write up of it <a href="http://en.wikipedia.org/wiki/ADFGVX_cipher">here</a>.</p>
+
+<p>I don&#8217;t want to go too far into the specifics of the cipher itself, as
+this post is meant to focus on the first part, encoding a string using a
+Ploybius square, and, what I feel at least, is a rather clever way
+of doing it.
+i<!-- more -->
+So, a Polybius sqaure essentially looks like this:</p>
+
+<table>
+  <tr>
+    <th> </th>
+    <th>A</th>
+    <th>D</th>
+    <th>F</th>
+    <th>G</th>
+    <th>X</th>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td>b</td>
+    <td>t</td>
+    <td>a</td>
+    <td>l</td>
+    <td>p</td>
+  </tr>
+  <tr>
+    <td>D</td>
+    <td>d</td>
+    <td>h</td>
+    <td>o</td>
+    <td>z</td>
+    <td>k</td>
+  </tr>
+  <tr>
+    <td>F</td>
+    <td>q</td>
+    <td>f</td>
+    <td>v</td>
+    <td>s</td>
+    <td>n</td>
+  </tr>
+  <tr>
+    <td>G</td>
+    <td>g</td>
+    <td>j</td>
+    <td>c</td>
+    <td>u</td>
+    <td>x</td>
+  </tr>
+  <tr>
+    <td>X</td>
+    <td>m</td>
+    <td>r</td>
+    <td>e</td>
+    <td>w</td>
+    <td>y</td>
+  </tr>
+</table>
+
+
+<p>To encode a string, you simply take the row header of the letter, and
+concatenate the column header of the letter. So, the letter a would be
+AF, b would be AA, c would be GF and so on. You may notice that the
+square is missing the letter i. In the interest of keeping it square, i
+has been combined with j. There is a slightly modified version of the
+ADFGX cipher, the ADFGVX cipher, that can accomodate for the missing i,
+as well as several other characters, such as numbers.</p>
+
+<p>Anyways, at first glance, doing these encodings programatically looks
+simple, just look up the row and column of each letter, and combine
+them. And to be sure, in theory, it is fairly simple. My first attempt
+involved making two, two dimensional associative  arrays, and looping through them
+(using the letters ADFGX as the keys) and getting the corresponding
+ciper text as the result. While this worked, it did not work well, and
+was subject to one major problem: what if you wanted to change the mixed
+alphabet? That would involve rewriting each array by hand. Not much fun.
+So, my goal was to make it easier to change out the mixed alphabet, and
+also find something that would run faster than O(n<sup>2).</sup></p>
+
+<p>The solution I eventually stumbled upon involves representing the mixed
+alphabet not as an array, or arrays, but as a simple string. So, the
+above mixed alphabet would look like &#8220;btalpdhozkqfvsngjcuxmrewy&#8221;. Using
+what we know about the workings of the Polybius square, we can make some
+assumptions about what letters correspond to which column and row
+headers.First off, to get the row, we can use simple integer division on
+the position of each character. We know that the polybius square is 5 x
+5, so, each row will have 5 characters. We can divide the character
+position in the mixed alphabet string by 5, and figure out the row its
+in. 0/5 = 0, 1/5 = 0, 2/5 = 0 etc. Since we are using ints rather than
+floats, we can be assured to only get whole numbers. If you continue in
+this, you&#8217;ll see that once we get to char[5], we&#8217;ve moved to a new row (5/5 =
+1).Since we have at most 25 characters in our square, this works quite
+nicely.</p>
+
+<p>Next, to determine the column, we can use a similar method, replacing
+the division with the modulus function. Using the index of each
+character, char[n], and calculating char[n] modulus 5, we can easily
+figure out which column each character will fall into. 0 % 5 = 0, 1 %
+5 = 1 &#8230; 7 % 5 = 2 &#8230;10 % 5 = 0 &#8230; 17 % 5 = 2 &#8230; 24 % 5 = 4 and so
+on.</p>
+
+<p>Each of these methods will generate a number from 0 to 4, which we can
+then use as an index into the string &#8220;ADFGX&#8221; to figure out which letter
+each corresponds to in the Polybius square. Then, just concatenate both
+letters (with the column being the first), and done, you have an encoded
+letter.</p>
+
+<p>The best part, this runs in O(n). Oh, and you can specify a mixed
+alphabet very easily. The code, in Python, I wrote for this
+is as follows:</p>
+
+<figure class='code'><figcaption><span>encode_as_polybius_square  </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">encode_as_polybius_square</span><span class="p">(</span><span class="n">mixed_alphabet</span><span class="p">,</span> <span class="n">cipher_text</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">encoded_text</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</span><span class='line'>    <span class="n">key</span> <span class="o">=</span> <span class="s">&quot;ADFGX&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#Strip all spaces and lowercase the whole string</span>
+</span><span class='line'>    <span class="n">cipher_text</span> <span class="o">=</span> <span class="n">cipher_text</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">cipher_text</span><span class="p">:</span>
+</span><span class='line'>        <span class="c">#Get the row header of the character, generating an</span>
+</span><span class='line'>        <span class="c">#index into the key</span>
+</span><span class='line'>        <span class="n">column_char</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">mixed_alphabet</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">character</span><span class="p">)</span> <span class="o">/</span> <span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>        <span class="c">#Get the column header in the same manner</span>
+</span><span class='line'>        <span class="n">row_char</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="n">mixed_alphabet</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">character</span><span class="p">)</span> <span class="o">%</span> <span class="mi">5</span><span class="p">]</span>
+</span><span class='line'>        <span class="c">#Combine the row header with the column header</span>
+</span><span class='line'>        <span class="n">encoded_text</span> <span class="o">+=</span> <span class="n">column_char</span> <span class="o">+</span> <span class="n">row_char</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">encoded_text</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, there you have it. A fast, simple way to encode a string based on a
+Polybius square.</p>
+
+<p>Next time, decoding the same string. Haven&#8217;t quite thought that out
+yet&#8230;</p>
+</div>
+
+
+<div class="meta">
+	<div class="date">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-04T16:17:00-07:00" pubdate data-updated="true">Dec 4<span>th</span>, 2012</time></div>
+	<div class="tags">
+
+
+	<a class='category' href='/blog/categories/crytopraphy/'>crytopraphy</a>, <a class='category' href='/blog/categories/math/'>math</a>, <a class='category' href='/blog/categories/python/'>python</a>
+
+
+</div>
+	
+		<span class="comments"><a href="/blog/2012/12/04/polybius-square-encoding-in-python/#disqus_thread">Comments</a></span>
+	
+</div></article>
+
+	<div class="share">
+	<div class="addthis_toolbox addthis_default_style ">
+	
+	
+	<a class="addthis_button_tweet"></a>
+	
+	
+	<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+	
+	<a class="addthis_counter addthis_pill_style"></a>
+	</div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid="></script>
+</div>
+
+
+
+<section id="comment">
+    <h1 class="title">Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</section>
+</div>
+	<footer id="footer" class="inner">Copyright &copy; 2013
+
+    Jeremy Cerise
+
+</footer>
+	<script src="/javascripts/slash.js"></script>
+<script src="/javascripts/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+	$('.fancybox').fancybox();
+})(jQuery);
+</script> <!-- Delete or comment this line to disable Fancybox -->
+
+
+<script type="text/javascript">
+      var disqus_shortname = 'readmythings';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.readmythings.com/blog/2012/12/04/polybius-square-encoding-in-python/';
+        var disqus_url = 'http://www.readmythings.com/blog/2012/12/04/polybius-square-encoding-in-python/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-34663691-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		})();
+	</script>
+
+
+
+
+</body>
+</html>
